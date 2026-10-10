@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Study Saathi</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;padding:20px;
+  font-family:Arial,sans-serif;
+  background:#101827;color:white
+}
+h1{color:#b8acff}
+.card{
+  background:#202b40;padding:18px;
+  border-radius:16px;margin:14px 0
+}
+button{
+  border:0;border-radius:10px;padding:13px;
+  background:#6d5ce8;color:white;
+  font-size:16px;width:100%;margin-top:10px
+}
+.option{
+  background:#344158;text-align:left
+}
+#result{color:#b8acff;font-weight:bold}
+</style>
+</head>
+<body>
+<h1>📚 Study Saathi</h1>
+<p>सीखो • अभ्यास करो • आगे बढ़ो</p>
+
+<div class="card" id="home">
+  <h2>अपना Quiz चुनो</h2>
+  <button onclick="startQuiz('gk')">General Knowledge</button>
+  <button onclick="startQuiz('math')">Mathematics</button>
+</div>
+
+<div class="card" id="quiz" hidden>
+  <p id="count"></p>
+  <h3 id="question"></h3>
+  <div id="options"></div>
+  <p id="result"></p>
+  <button id="next" onclick="nextQuestion()" hidden>
+    अगला सवाल →
+  </button>
+</div>
+
+<script>
+const questions = {
+  gk: [
+    {q:"भारत की राजधानी क्या है?",
+     a:["जयपुर","नई दिल्ली","मुंबई","भोपाल"],c:1},
+    {q:"भारत का राष्ट्रीय पशु कौन है?",
+     a:["शेर","हाथी","बाघ","घोड़ा"],c:2},
+    {q:"भारत का स्वतंत्रता दिवस कब है?",
+     a:["15 अगस्त","26 जनवरी","2 अक्टूबर","14 नवंबर"],c:0}
+  ],
+  math: [
+    {q:"12 + 8 कितना होता है?",
+     a:["18","20","22","24"],c:1},
+    {q:"9 × 7 कितना है?",
+     a:["56","63","72","49"],c:1},
+    {q:"100 ÷ 4 कितना है?",
+     a:["20","25","40","50"],c:1}
+  ]
+};
+
+let list=[], index=0, score=0, answered=false;
+
+function startQuiz(subject){
+  list=questions[subject];
+  index=0;score=0;
+  document.getElementById("home").hidden=true;
+  document.getElementById("quiz").hidden=false;
+  showQuestion();
+}
+
+function showQuestion(){
+  answered=false;
+  document.getElementById("count").textContent=
+    `सवाल ${index+1} / ${list.length}`;
+  document.getElementById("question").textContent=
+    list[index].q;
+  document.getElementById("result").textContent="";
+  document.getElementById("next").hidden=true;
+
+  const box=document.getElementById("options");
+  box.replaceChildren();
+
+  list[index].a.forEach((answer,i)=>{
+    const btn=document.createElement("button");
+    btn.className="option";
+    btn.textContent=answer;
+    btn.onclick=()=>checkAnswer(i);
+    box.appendChild(btn);
+  });
+}
+
+function checkAnswer(choice){
+  if(answered)return;
+  answered=true;
+  const correct=list[index].c;
+  if(choice===correct)score++;
+
+  document.getElementById("result").textContent=
+    choice===correct ? "✅ बिल्कुल सही!" :
+    "❌ सही जवाब: "+list[index].a[correct];
+
+  document.getElementById("next").hidden=false;
+}
+
+function nextQuestion(){
+  index++;
+  if(index<list.length){
+    showQuestion();
+  }else{
+    document.getElementById("question").textContent=
+      "Quiz पूरा हुआ! 🎉";
+    document.getElementById("count").textContent="आपका परिणाम";
+    document.getElementById("options").replaceChildren();
+    document.getElementById("result").textContent=
+      `आपका स्कोर: ${score} / ${list.length}`;
+    const next=document.getElementById("next");
+    next.textContent="Home पर वापस जाएँ";
+    next.onclick=()=>{
+      document.getElementById("quiz").hidden=true;
+      document.getElementById("home").hidden=false;
+      next.onclick=nextQuestion;
+      next.textContent="अगला सवाल →";
+    };
+  }
+}
+</script>
+</body>
+</html>
